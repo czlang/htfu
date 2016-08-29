@@ -1,14 +1,12 @@
 (ns htfu.cljs.core
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [htfu.cljs.pages :as pages]
-            [clj-brnolib.cljs.sente :refer [server-call start-router!]]
             [cljs.pprint :refer [pprint]]
             [clojure.string :as str]
             [htfu.cljs.common :as common]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
-            [re-com.core :as re-com]
-            [re-frame.core :as re-frame]
+            [re-frame.core :refer [reg-event-db reg-event-fx reg-sub dispatch]]
             [reagent.core :as reagent]
             [reagent.ratom :as ratom]
             [secretary.core :as secretary]
@@ -18,28 +16,26 @@
 
 (enable-console-print!)
 
-(re-frame/register-sub
- :current-page
- (fn [db _]
-   (ratom/reaction (:current-page @db))))
-
-(re-frame/register-handler
- :set-current-page
- common/debug
- (fn [db [_ current-page]]
-   (assoc db :current-page current-page)))
-
-(re-frame/register-handler
+(reg-event-db
  :init-app
- common/debug
  (fn [db [_]]
    (merge db {})))
+
+(reg-sub
+ :current-page
+ (fn [db _]
+   (reaction (:current-page @db))))
+
+(reg-event-db
+ :set-current-page
+ (fn [db [_ current-page]]
+   (assoc db :current-page current-page)))
 
 ;; ---- Routes ---------------------------------------------------------------
 (secretary/set-config! :prefix "#")
 
 (secretary/defroute "/" []
-  (re-frame/dispatch [:set-current-page :main]))
+  (dispatch [:set-current-page :main]))
 
 (defn hook-browser-navigation! []
   (doto (History.)
@@ -54,10 +50,11 @@
 
 (defn main-app-area []
   (fn []
-    [pages/page]))
+    #_[pages/page] ;; FIXME 
+    [htfu.cljs.home/home]))
 
 (defn main []
-  (start-router!)
+  ;;(start-router!)
   (hook-browser-navigation!)
   (if-let [node (.getElementById js/document "app")]
     (reagent/render [main-app-area] node)))

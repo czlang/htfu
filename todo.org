@@ -1,0 +1,5 @@
+
+
+* TODO post data / save to datomic
+* DONE snackbar doesnt show up on mobile
+CLOSED: [2016-08-29 Po 14:11]

@@ -26,6 +26,7 @@
      (assoc-in db [:msg kw] msg))))
 
 (defn error-msg-popup [title msg on-close]
+  ;; TODO materialize !
   [re-com/modal-panel
    :backdrop-on-click on-close
    :child [re-com/alert-box
@@ -42,6 +43,7 @@
     (fn []
       [:div
        (when-not (str/blank? @info-msg)
+         ;; TODO materialize !
          [re-com/alert-box
           :alert-type :info
           :body @info-msg
