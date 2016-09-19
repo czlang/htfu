@@ -9,6 +9,11 @@
 (defn pull-by-id [db id]
   (d/pull db "[*]" id))
 
+(defn save-item [conn item]
+  (d/transact conn [{:db/id (cljc-util/new-id)
+                     :item/title (:title item)
+                     :item/desc (:desc item)}]))
+
 
 
 

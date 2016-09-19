@@ -61,6 +61,7 @@
          "application/json"))
 
     (POST "/item-save" {:keys [params]}
+      (service/save-item conn params)
       (response/content-type
        (response/response
         (json/write-str
