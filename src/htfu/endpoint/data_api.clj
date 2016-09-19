@@ -10,7 +10,9 @@
             [crypto.password.scrypt :as scrypt]
             [ring.util.response :as response]
             [taoensso.timbre :as timbre]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [htfu.db.service :as service]
+            [datomic.api :as d]))
 
 (def system-title "HTFU")
 

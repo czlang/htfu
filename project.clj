@@ -6,10 +6,15 @@
                  [org.apache.httpcomponents/httpclient "4.5.1"]
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.227"]
+                 [org.clojure/tools.nrepl "0.2.12"]
                  [compojure "1.5.0"]
                  [duct "0.5.10"]
                  [environ "1.0.2"]
                  [http-kit "2.1.19"]
+                 [com.cognitect/transit-clj "0.8.285"]
+                 [com.cognitect/transit-cljs "0.8.237"]
+                 [com.stuartsierra/component "0.3.1"]
+                 [com.datomic/datomic-pro "0.9.5206" :exclusions [joda-time]]
                  [io.rkn/conformity "0.4.0"]
                  [meta-merge "0.1.1"]
                  [org.slf4j/slf4j-nop "1.7.14"]
@@ -18,7 +23,7 @@
                  [ring/ring-defaults "0.2.1"]
                  [ring/ring-json "0.4.0"]
                  #_[ring-middleware-format "0.7.0"]
-                 #_[ring/ring-anti-forgery "1.0.1"]
+                 #_[ring/rng-anti-forgery "1.0.1"]
                  [crypto-password "0.2.0"]
                  [reagent "0.6.0-rc" :exclusions [cljsjs/react]]
                  [cljsjs/material-ui "0.15.4-0"]
@@ -56,8 +61,6 @@
    :profiles/dev  {}
    :profiles/test {}
    :project/dev   {:dependencies [[reloaded.repl "0.2.1"]
-                                  [org.clojure/tools.namespace "0.2.11"]
-                                  [org.clojure/tools.nrepl "0.2.12"]
                                   [eftest "0.1.1"]
                                   [kerodon "0.7.0"]
                                   [com.cemerick/piggieback "0.2.1"]
@@ -65,7 +68,11 @@
                                   [figwheel "0.5.0-6"]]
                    :source-paths ["dev"]
                    :repl-options {:init-ns user
-                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
+                                  :timeout 120000}
                    :env {:dev "true"
-                         :port "3000"}}
+                         :port "3000"
+                         :database-url "datomic:dev://localhost:4334/htfu"
+                         ;;:database-url "datomic:dev://localhost:4334/didagraph"
+                         }}
    :project/test  {}})

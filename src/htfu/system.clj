@@ -4,6 +4,7 @@
             [htfu.middleware :as middleware]
             [clojure.java.io :as io]
             [com.stuartsierra.component :as component]
+            [htfu.component.datomic :refer [datomic]]
             [htfu.endpoint.data-api :refer [data-api-endpoint]]
             [duct.component.endpoint :refer [endpoint-component]]
             [duct.component.handler :refer [handler-component]]
@@ -34,13 +35,18 @@
          :aliases    {}}})
 
 (defn new-system [config]
+  (Thread/setDefaultUncaughtExceptionHandler
+   (reify Thread$UncaughtExceptionHandler
+     (uncaughtException [_ thread ex]
+       (timbre/error ex "Uncaught exception on" (.getName thread)))))
   (let [config (meta-merge base-config config)]
     (-> (component/system-map
          :nrepl (nrepl-server (:nrepl-port config))
+         :db (datomic (get-in config [:db :uri]))
          :http (http-kit-server (:http config))
          :app  (handler-component (:app config))
          :data-api (endpoint-component data-api-endpoint))
         (component/system-using
          {:http [:app]
           :app  [:data-api]
-          :data-api []}))))
+          :data-api [:db]}))))

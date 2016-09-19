@@ -4,6 +4,7 @@
             [clojure.repl :refer :all]
             [clojure.tools.namespace.repl :refer [refresh]]
             [com.stuartsierra.component :as component]
+            [datomic.api :as d]
             [htfu.config :as config]
             [htfu.system :as system]
             [duct.component.figwheel :as figwheel]
@@ -47,3 +48,9 @@
   (load "local"))
 
 (reloaded.repl/set-init! new-system)
+
+(defn conn []
+  (-> system :db :spec))
+
+(defn db []
+  (d/db (conn)))
