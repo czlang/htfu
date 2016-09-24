@@ -20,8 +20,7 @@
                  [org.slf4j/slf4j-nop "1.7.14"]
                  [secretary "1.2.3"]
                  [ring "1.5.0"]
-                 [ring/ring-defaults "0.2.1"]
-                 [ring/ring-json "0.4.0"]
+                 [ring/ring-defaults "0.2.1"] [ring/ring-json "0.4.0"]
                  #_[ring-middleware-format "0.7.0"]
                  #_[ring/rng-anti-forgery "1.0.1"]
                  [crypto-password "0.2.0"]
@@ -72,7 +71,5 @@
                                   :timeout 120000}
                    :env {:dev "true"
                          :port "3000"
-                         :database-url "datomic:dev://localhost:4334/htfu"
-                         ;;:database-url "datomic:dev://localhost:4334/didagraph"
-                         }}
+                         :database-url "datomic:dev://localhost:4334/htfu"}}
    :project/test  {}})

@@ -53,18 +53,16 @@
       (-> (response/redirect "/" :see-other)
           (assoc-in [:session :user] {:username "Langi"})))
 
-    #_(GET "/disp-test" [message user :as req]
-        (response/content-type
-         (response/response
-          (json/write-str
-           {"A" "AAAAAAAA"}))
-         "application/json"))
+    (GET "/all-exercises" [message user :as req]
+      (response/content-type
+       (response/response
+        (json/write-str
+         (service/find-all-exercises (d/db conn))))
+       "application/json"))
 
     (POST "/item-save" {:keys [params]}
       (service/save-item conn params)
       (response/content-type
        (response/response
-        (json/write-str
-         {"A" "AAAAAAAA"
-          "B" "BBBBBBBB"}))
+        (json/write-str {}))
        "application/json"))))
