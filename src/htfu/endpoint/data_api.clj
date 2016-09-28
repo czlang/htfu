@@ -53,11 +53,11 @@
       (-> (response/redirect "/" :see-other)
           (assoc-in [:session :user] {:username "Langi"})))
 
-    (GET "/all-exercises" [message user :as req]
+    (GET "/all-groups-with-exs" [message user :as req]
       (response/content-type
        (response/response
         (json/write-str
-         (service/find-all-exercises (d/db conn))))
+         (service/find-all-groups-with-exs (d/db conn))))
        "application/json"))
 
     (POST "/item-save" {:keys [params]}

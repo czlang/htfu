@@ -9,21 +9,32 @@
 (defn pull-by-id [db id]
   (d/pull db "[*]" id))
 
-(defn find-all-exercises [db]
-  (d/q '[:find [(pull ?exercise [*])...]
-         :where
-         [?exercise :item/title _]]
-       db))
-
 (defn save-item [conn item]
   (let [tx-data [{:db/id (cljc-util/new-id)
-                  :item/title (:title item)
-                  :item/desc (:desc item)}]]
+                  :ex/title (:title item)
+                  :ex/desc (:desc item)}]]
     (timbre/info "transact tx-data type: " (type tx-data))
     (timbre/info "transact tx-data: \n" (with-out-str (pprint tx-data)))
     (let [tx-result @(d/transact conn tx-data)]
       (timbre/info "result: \n" (with-out-str (pprint tx-result))))))
 
+(defn find-all-groups [db]
+  (d/q '[:find
+         [(pull ?ex-group [*])...]
+         :where
+         [?ex-group :ex-group/title _]]
+       db))
 
+(defn find-exs-by-group-id [db group-id]
+  (d/q '[:find
+         [(pull ?ex [*])...]
+         :in $ ?ex-group
+         :where
+         [?ex :ex/group ?ex-group]]
+       db group-id))
 
-
+(defn find-all-groups-with-exs [db]
+  (let [groups (find-all-groups db)]
+    (map
+     #(assoc % :exs (find-exs-by-group-id db (:db/id %)))
+     groups)))

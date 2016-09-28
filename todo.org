@@ -1,7 +1,7 @@
 
 
 * TODO exercise belongs to some group - master step
-** maybe I just dont need form for this - add this straight to init data edn?
+** dont need form for this right now - add this straight to init data edn
 * DONE post data / save to datomic
 CLOSED: [2016-09-23 Pá 12:10]
 * DONE snackbar doesnt show up on mobile

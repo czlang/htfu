@@ -1,18 +1,71 @@
-{:htfu/item
+{:htfu/ex-group
  {:txes [[{:db/id #db/id [:db.part/db]
-           :db/ident :item/title
+           :db/ident :ex-group/title
            :db/valueType :db.type/string
            :db/cardinality :db.cardinality/one
            :db.install/_attribute :db.part/db}
           {:db/id #db/id [:db.part/db]
-           :db/ident :item/desc
+           :db/ident :ex-group/desc
+           :db/valueType :db.type/string
+           :db/cardinality :db.cardinality/one
+           :db.install/_attribute :db.part/db}]]}
+
+ :htfu/ex
+ {:txes [[{:db/id #db/id [:db.part/db]
+           :db/ident :ex/group
+           :db/valueType :db.type/ref
+           :db/cardinality :db.cardinality/one
+           :db.install/_attribute :db.part/db}
+          {:db/id #db/id [:db.part/db]
+           :db/ident :ex/title
+           :db/valueType :db.type/string
+           :db/cardinality :db.cardinality/one
+           :db.install/_attribute :db.part/db}
+          {:db/id #db/id [:db.part/db]
+           :db/ident :ex/desc
            :db/valueType :db.type/string
            :db/cardinality :db.cardinality/one
            :db.install/_attribute :db.part/db}]]}
 
  :htfu/set-data
- {:txes [[{:db/id #db/id [:db.part/user -1]
-           :item/title "Test test title"
-           :item/desc "Test test desc Test test desc Test test desc Test test desc Test test desc Test test desc Test test desc Test test desc Test test desc Test test desc Test test desc "}]]
-  :requires [:htfu/item]}}
+ {:txes [
+         [{:db/id #db/id [:db.part/user -1]
+           :ex-group/title "Pushups"
+           :ex-group/desc "Pectorals (major and minor), anterior (front) deltoid,triceps"}
+          {:db/id #db/id [:db.part/user -2]
+           :ex-group/title "Squats"
+           :ex-group/desc "Quadriceps, gluteal muscles (the butt), hamstrings and inner thighs, hips, calves and feet"}
+          {:db/id #db/id [:db.part/user -3]
+           :ex-group/title "Pullups"
+           :ex-group/desc "latissimus dorsi (the 'wings') teres, rhomboid and trapezius,biceps, forearms and hands"}
+
+
+          {:db/id #db/id [:db.part/user -101]
+           :ex/group #db/id [:db.part/user -2]
+           :ex/title "Shoulderstand squats"
+           :ex/desc "Lie on your back, with your knees well bent. Kick against the floor while pushing with your hands until your feet are up in the air. As you reach this position, place your hands on your lower back for support, whilst keeping your upper arms firmly on the floor. You will now be in a shoulderstand position, supported by your shoulders and upper back, as well as the backs of your upper arms. Remember to constantly support your weight through these areas and keep any pressure off the neck. Your body should be locked straight, not bent at the hips. This is the start position (fig. 21). Keeping your torso as upright as possible, bend at the hips and knees until your knees touch your forehead. This is the finish position (fig. 22). Extend your legs directly back up, until your body is back in the start position. Repeat."}
+          {:db/id #db/id [:db.part/user -102]
+           :ex/group #db/id [:db.part/user -2]
+           :ex/title "Jackknife squats"
+           :ex/desc "Stand in front of a sturdy object which comes up to your knees, or at least the tops of your shins. A small coffee table, chair or a bunk are good choices. Your legs should be shoulder width apart, or a little wider. Keeping your legs fairly straight, bend at your hips until your palms are in contact with the object. Tilt forwards slightly so that you can take some of your body's weight through your hands. This is the start position (fig. 23). Now, with your torso remaining as parallel to the floor as possible, bend at the knees and hips until your hamstrings reach your calves and you cannot go any further. This will require that you bend your arms, also. This is the finish position (fig. 24). Using combined leg and arm power, push yourself up to the start position. Do not raise the heels at any point during the exercise."}
+
+
+          {:db/id #db/id [:db.part/user -103]
+           :ex/group #db/id [:db.part/user -1]
+           :ex/title "Wall pushups"
+           :ex/desc "Face a wall. With your feet together, place your palms flat against the wall. This is the start position (fig. 1). Your arms should be straight and shoulder width apart, with the hands at chest level. Bend the shoulders and elbows until the forehead gently touches the wall. This is the finish position (fig. 2). Press back to the start position and repeat."}
+          {:db/id #db/id [:db.part/user -104]
+           :ex/group #db/id [:db.part/user -1]
+           :ex/title "Incline pushups"
+           :ex/desc "To do this exercise you will need to find a secure object or piece of furniture which is about half your height-it should reach the midpoint of your body (roughly around the level of the hips). Good options might be desks, tall chairs, work surfaces, kitchen tops, low walls or solid fences. In most prisons, I've found that the cell basin fits the bill nicely-but make sure it's strong enough to accommodate the demands of the exercise. With your feet together and your body aligned, lean over and grasp the object with the arms straight and shoulder width apart. This is the start position of the exercise and-if the object reaches your midpoint-should put you at about 45 degrees from the floor (see fig. 3). Bending at the elbows and shoulders, lower yourself until your torso gently touches the top of the object (fig. 4). Pause briefly before pressing back up to the start position, and repeat."}
+          {:db/id #db/id [:db.part/user -105]
+           :ex/group #db/id [:db.part/user -1]
+           :ex/title "Kneeling pushups"
+           :ex/desc "Kneel on the floor with your feet together, and your palms flat on the ground in front of you. The arms should be straight, shoulder width apart, and in line with your chest. Link one ankle around the other, and keep the hips straight and in alignment with the trunk and head. This is the start position (fig. 5). Using the knees as a pivot, bend at the shoulders and elbows until your chest is approximately one fist's width from the floor (fig. 6). Pause and press back to the start position, then repeat."}
+          ]]
+
+  :requires [:htfu/ex-group
+             :htfu/ex]}}
+
+
 

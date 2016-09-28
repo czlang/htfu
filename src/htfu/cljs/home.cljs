@@ -85,13 +85,12 @@
  (fn
    [{db :db} _]
    {:http-xhrio {:method :get
-                 :uri "/all-exercises"
+                 :uri "/all-groups-with-exs"
                  :format (ajax/json-request-format)
                  :response-format (ajax/json-response-format {:keywords? true})
                  :on-success [:process-response :all-exercises]
                  :on-failure [:bad-response]}
     :db  (assoc db :loading? true)}))
-
 
 ;; SUBS
 
@@ -148,18 +147,38 @@
 (defn all-exercises []
   (let [all-exercises (re-frame/subscribe [:all-exercises])]
     (fn []
-      [rui/list
+
+      [rui/paper
        [rui/subheader "All exercises"]
        (doall
         (map
          (fn [{:keys [id title desc] :as item}]
            ^{:key id}
-           [rui/list-item {:primary-text title
-                           :secondary-text desc
-                           :on-touch-tap #(do
-                                            (prn "BOOM")
-                                            )}])
-         @all-exercises))])))
+           [rui/paper
+            [rui/subheader {:style {:font-size "120%"
+                                    :font-weight "bold"}} title]
+            [rui/paper
+             (doall
+              (map
+               (fn [{:keys [id title desc] :as ex}]
+                 ^{:key id}
+                 [:div
+                  [rui/subheader title]
+                  [rui/card-text desc]])
+               (:exs item)))]])
+         @all-exercises))]
+
+      ;; TODO unable to create nested list at the moment. Try later or delete
+      #_[rui/list
+         [rui/subheader "All exercises"]
+         (doall
+          (map
+           (fn [{:keys [id title desc] :as item}]
+             ^{:key id}
+             [rui/list-item {:primary-text title
+                             :secondary-text desc
+                             :on-touch-tap #(do (prn "BOOM"))}])
+           @all-exercises))])))
 
 (defn dashboard []
   (fn []
