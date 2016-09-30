@@ -21,7 +21,10 @@
 (reg-event-db
  :init-app
  (fn [db [_]]
-   (merge db {:show-comps [:dashboard]})))
+   (merge db {:show-comps [;;:dashboard
+                           ;;:all-exercises
+                           :plan
+                           ]})))
 
 (reg-sub
  :all-data

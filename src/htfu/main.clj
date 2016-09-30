@@ -18,7 +18,7 @@
               prod-config))
 
 (defn -main [& args]
-  (let [system (new-system config)]
+  (let [system (-> (new-system config)
+                   component/start)]
     (println "Starting HTTP server on port" (-> system :http :port))
-    (add-shutdown-hook ::stop-system #(component/stop system))
-    (component/start system)))
+    (add-shutdown-hook ::stop-system #(component/stop system))))

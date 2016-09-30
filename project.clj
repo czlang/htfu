@@ -14,7 +14,7 @@
                  [com.cognitect/transit-clj "0.8.285"]
                  [com.cognitect/transit-cljs "0.8.237"]
                  [com.stuartsierra/component "0.3.1"]
-                 [com.datomic/datomic-pro "0.9.5206" :exclusions [joda-time]]
+                 [com.datomic/datomic-pro "0.9.5394" :exclusions [joda-time com.google.guava/guava]]
                  [io.rkn/conformity "0.4.0"]
                  [meta-merge "0.1.1"]
                  [org.slf4j/slf4j-nop "1.7.14"]

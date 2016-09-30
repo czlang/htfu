@@ -92,6 +92,20 @@
                  :on-failure [:bad-response]}
     :db  (assoc db :loading? true)}))
 
+
+(reg-event-fx
+ :save-plan-day
+ (fn
+   [{db :db} [_ type-keyw day-num value]]
+   {:http-xhrio {:method :post
+                 :params {:type-keyw type-keyw :day-num day-num :value value}
+                 :uri "/save-plan-day"
+                 :format (ajax/json-request-format)
+                 :response-format (ajax/json-response-format {:keywords? true})
+                 :on-success [:item-saved]
+                 :on-failure [:item-save-fail]}
+    :db  (assoc db :loading? true)}))
+
 ;; SUBS
 
 (reg-sub
@@ -155,8 +169,7 @@
          (fn [{:keys [id title desc] :as item}]
            ^{:key id}
            [rui/paper
-            [rui/subheader {:style {:font-size "120%"
-                                    :font-weight "bold"}} title]
+            [rui/subheader title]
             [rui/paper
              (doall
               (map
@@ -164,25 +177,94 @@
                  ^{:key id}
                  [:div
                   [rui/subheader title]
-                  [rui/card-text desc]])
-               (:exs item)))]])
-         @all-exercises))]
+                  [rui/card-text desc]
+                  [rui/subheader "Training goals"]
 
-      ;; TODO unable to create nested list at the moment. Try later or delete
-      #_[rui/list
-         [rui/subheader "All exercises"]
-         (doall
-          (map
-           (fn [{:keys [id title desc] :as item}]
-             ^{:key id}
-             [rui/list-item {:primary-text title
-                             :secondary-text desc
-                             :on-touch-tap #(do (prn "BOOM"))}])
-           @all-exercises))])))
+                  [rui/table
+                   [rui/table-body {:display-row-checkbox false}
+                    [rui/table-row
+                     [rui/table-row-column "Beginner standard "]
+                     [rui/table-row-column (:beginner-standard ex)]]
+                    [rui/table-row
+                     [rui/table-row-column "Intermediate standard "]
+                     [rui/table-row-column (:intermediate-standard ex)]]
+                    [rui/table-row
+                     [rui/table-row-column "Progression standard "]
+                     [rui/table-row-column (:progression-standard ex)]]]]])
+               (:exs item)))]])
+         @all-exercises))])))
 
 (defn dashboard []
   (fn []
     [rui/subheader "Dashboard"]))
+
+(defn plan-table-select [title data selected type-keyw day-num]
+  (fn [title data selected type-keyw day-num]
+    [rui/select-field {:hint-text title
+                       :on-change (fn [e idx value]
+                                    (prn value day-num)
+                                    (dispatch [:save-plan-day type-keyw day-num value])
+                                    (swap! selected assoc type-keyw value))
+                       :value (get @selected type-keyw)}
+
+     (doall
+      (map
+       (fn [{:keys [id title desc] :as ex}]
+         ^{:key id}
+         [rui/menu-item {:value id :primary-text title}])
+       data))]))
+
+(defn plan-table-row [idx day all-exercises]
+  (let [selected (reagent/atom {:group nil :ex nil})]
+    (fn []
+      (let [groups (-> (filter #(= (:group @selected) (:id %)) @all-exercises) first :exs)]
+        [rui/table-row {:selectable false}
+         [rui/table-row-column {:style {:padding "10px"
+                                        :width "30px"
+                                        :background "#EAEAEA"}} day]
+         [rui/table-row-column
+          [plan-table-select "Group" @all-exercises selected :group idx]]
+
+         [rui/table-row-column
+          (when (:group @selected)
+            [plan-table-select "Exercise" groups selected :ex idx])]
+
+         [rui/table-row-column
+          (when (:ex @selected)
+            (let [ex (first
+                      (filter
+                       #(= (:ex @selected) (:id %))
+                       groups))]
+              [rui/radio-button-group {:name "goals" :label-position "left"}
+               [rui/radio-button {:value :beginner-standard :label (:beginner-standard ex)}]
+               [rui/radio-button {:value :intermediate-standard :label (:intermediate-standard ex)}]
+               [rui/radio-button {:value :progression-standard :label (:progression-standard ex)}]]))]]))))
+
+(defn plan []
+  (let [all-exercises (re-frame/subscribe [:all-exercises])]
+    (fn []
+      [rui/paper
+       [rui/subheader "Plan"]
+
+       [rui/table
+
+        [rui/table-header {:adjust-for-checkbox false
+                           :display-select-all false}
+         [rui/table-row
+          [rui/table-header-column {:style {:padding "10px"
+                                            :width "30px"
+                                            :background "#EAEAEA"}} "Day"]
+          [rui/table-header-column "Group"]
+          [rui/table-header-column "Exercise"]
+          [rui/table-header-column "Goals"]]]
+
+        [rui/table-body {:display-row-checkbox false}
+         (doall
+          (map-indexed
+           (fn [idx day]
+             ^{:key idx}
+             [plan-table-row idx day all-exercises])
+           ["Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun"]))]]])))
 
 (defn home []
   (let [drawer-open? (reagent/atom false)
@@ -202,6 +284,9 @@
          [rui/menu-item {:on-touch-tap #(do
                                           (dispatch [:show-comps [:dashboard]])
                                           (reset! drawer-open? (not @drawer-open?)))} "Dashboard"]
+         [rui/menu-item {:on-touch-tap #(do
+                                          (dispatch [:show-comps [:plan]])
+                                          (reset! drawer-open? (not @drawer-open?)))} "My plan"]
          [rui/menu-item {:on-touch-tap #(do
                                           (dispatch [:show-comps [:all-exercises]])
                                           (reset! drawer-open? (not @drawer-open?)))} "All exercises"]
@@ -225,6 +310,7 @@
                        :onRequestClose #(dispatch [:clear-message])}]]])))
 
 (register-comp :dashboard dashboard)
+(register-comp :plan plan)
 (register-comp :item-form item-form)
 (register-comp :all-exercises all-exercises)
 

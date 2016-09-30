@@ -65,4 +65,11 @@
       (response/content-type
        (response/response
         (json/write-str {}))
+       "application/json"))
+
+    (POST "/save-plan-day" {:keys [params]}
+      (service/save-plan-day conn params)
+      (response/content-type
+       (response/response
+        (json/write-str {}))
        "application/json"))))
