@@ -1,5 +1,7 @@
 
 
+* TODO plan
+** load and set data
 * TODO exercise belongs to some group - master step
 ** dont need form for this right now - add this straight to init data edn
 * DONE post data / save to datomic
