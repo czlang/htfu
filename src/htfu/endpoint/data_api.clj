@@ -77,11 +77,11 @@
          (service/find-all-groups-with-exs (d/db conn))))
        "application/json"))
 
-    (POST "/item-save" {:keys [params]}
-      (service/save-item conn params)
+    (GET "/plan" [message user :as req]
       (response/content-type
        (response/response
-        (json/write-str {}))
+        (json/write-str
+         (service/find-all-day-num-plans (d/db conn))))
        "application/json"))
 
     (POST "/save-plan-day" {:keys [params]}

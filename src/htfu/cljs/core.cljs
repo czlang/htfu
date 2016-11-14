@@ -80,7 +80,7 @@
     [rui/mui-theme-provider
      [rui/paper
       [htfu.cljs.home/home]
-      [inspector]]]))
+      #_[inspector]]]))
 
 (defn main []
   (hook-browser-navigation!)

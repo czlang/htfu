@@ -50,14 +50,19 @@
            :db/cardinality :db.cardinality/one
            :db.install/_attribute :db.part/db}
           {:db/id #db/id [:db.part/db]
-           :db/ident :plan/groups
+           :db/ident :plan/group
            :db/valueType :db.type/ref
-           :db/cardinality :db.cardinality/many
+           :db/cardinality :db.cardinality/one
            :db.install/_attribute :db.part/db}
           {:db/id #db/id [:db.part/db]
-           :db/ident :plan/exs
+           :db/ident :plan/ex
            :db/valueType :db.type/ref
-           :db/cardinality :db.cardinality/many
+           :db/cardinality :db.cardinality/one
+           :db.install/_attribute :db.part/db}]
+         [{:db/id #db/id [:db.part/db]
+           :db/ident :plan/standard
+           :db/valueType :db.type/keyword
+           :db/cardinality :db.cardinality/one
            :db.install/_attribute :db.part/db}]]}
 
  :htfu/set-data

@@ -45,23 +45,13 @@
          [?plan :plan/day-num ?day-num]]
        db day-num))
 
-(defn save-item [conn item]
-  (let [tx-data [{:db/id (cljc-util/new-id)
-                  :ex/title (:title item)
-                  :ex/desc (:desc item)}]]
-    (timbre/info "transact tx-data type: " (type tx-data))
-    (timbre/info "transact tx-data: \n" (with-out-str (pprint tx-data)))
-    (let [tx-result @(d/transact conn tx-data)]
-      (timbre/info "result: \n" (with-out-str (pprint tx-result))))))
-
 (defn save-plan-day [conn plan-day-data]
-  (let [plan-day-num (first (find-day-num-plan (d/db conn) (:day-num plan-day-data)))
-        ccc (pprint plan-day-num)
-        tx-data [{:db/id (or (:db/id plan-day-num)
-                             (cljc-util/new-id))
-                  :plan/day-num (:day-num plan-day-data)
-                  (keyword (str "plan") (str (:type-keyw plan-day-data) "s"))
-                  [{:db/id (:value plan-day-data)}]}]]
+  (let [data (:data plan-day-data)
+        tx-data [{:db/id (cljc-util/new-id)
+                  :plan/day-num (:day data)
+                  :plan/group (:group data)
+                  :plan/ex (:ex data)
+                  :plan/standard (keyword (:standard data))}]]
     (timbre/info "transact tx-data type: " (type tx-data))
     (timbre/info "transact tx-data: \n" (with-out-str (pprint tx-data)))
     (let [tx-result @(d/transact conn tx-data)]
