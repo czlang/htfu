@@ -203,7 +203,9 @@
   (let [empty-data {:day nil :group nil :ex nil :standard nil}
         data-to-save (reagent/atom empty-data)]
     (fn []
-      (let [groups (-> (filter #(= (:group @data-to-save) (:id %)) @all-exercises) first :exs)]
+      (let [exs (sort-by :id (-> (filter #(= (:group @data-to-save) (:id %)) @all-exercises)
+                                 first
+                                 :exs))]
         [:div
          [:div
           [rui/select-field {:hint-text "Day"
@@ -232,7 +234,7 @@
            [:div
             [plan-table-select
              "Exercise"
-             groups
+             exs
              (:ex @data-to-save)
              :ex
              (:day @data-to-save)
@@ -242,7 +244,7 @@
            (let [ex (first
                      (filter
                       #(= (:ex @data-to-save) (:id %))
-                      groups))]
+                      exs))]
              [rui/radio-button-group {:name "goals"
                                       :label-position "left"
                                       :on-change (fn [e v]
