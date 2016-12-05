@@ -67,6 +67,13 @@
        (assoc :loading? false)
        (assoc :message {:id :error :text "Item save FAIL"}))))
 
+(reg-event-db
+ :item-delete-fail
+ (fn [db [_ response]]
+   (-> db
+       (assoc :loading? false)
+       (assoc :message {:id :error :text "Item delete FAIL"}))))
+
 (reg-event-fx
  :all-exercises
  (fn
@@ -102,6 +109,19 @@
                  :response-format (ajax/json-response-format {:keywords? true})
                  :on-success [:load-plan]
                  :on-failure [:item-save-fail]}
+    :db  (assoc db :loading? true)}))
+
+(reg-event-fx
+ :delete-plan-day
+ (fn
+   [{db :db} [_ id]]
+   {:http-xhrio {:method :post
+                 :params {:id id}
+                 :uri "/delete-plan-day"
+                 :format (ajax/json-request-format)
+                 :response-format (ajax/json-response-format {:keywords? true})
+                 :on-success [:load-plan]
+                 :on-failure [:item-delete-fail]}
     :db  (assoc db :loading? true)}))
 
 ;; SUBS
@@ -282,8 +302,8 @@
                  :style {:margin "4px"}}
                 (group-param @all-exercises (get-in v [:group :id]) :title)]
              [rui/chip
-              {:on-touch-tap #(prn "TODO EDIT " (:id v))
-               :on-request-delete #(prn "TODO DELETE " (:id v))
+              {:on-touch-tap #(prn "TODO EDIT? " (:id v))
+               :on-request-delete #(dispatch [:delete-plan-day (:id v)])
                :style {:margin "4px"}}
               (str
                (ex-param @all-exercises (get-in v [:ex :id]) :title)

@@ -2,8 +2,10 @@
 
 * TODO plan
 ** load and set data
+* TODO delete day plan confirm or undo
 * TODO exercise belongs to some group - master step
 ** dont need form for this right now - add this straight to init data edn
+* TODO refresh button that loads everything? (mobile/desktop sync)
 * DONE post data / save to datomic
 CLOSED: [2016-09-23 Pá 12:10]
 * DONE snackbar doesnt show up on mobile

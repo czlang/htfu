@@ -57,4 +57,12 @@
     (let [tx-result @(d/transact conn tx-data)]
       (timbre/info "result: \n" (with-out-str (pprint tx-result))))))
 
+(defn delete-plan-day [conn data]
+  (let [id (:id data)
+        tx-data [[:db.fn/retractEntity id]]]
+    (timbre/info "transact tx-data type: " (type tx-data))
+    (timbre/info "transact tx-data: \n" (with-out-str (pprint tx-data)))
+    (let [tx-result @(d/transact conn tx-data)]
+      (timbre/info "result: \n" (with-out-str (pprint tx-result))))))
+
 
