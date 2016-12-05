@@ -12,14 +12,13 @@
             [cljs-react-material-ui.icons :as ic]
             [ajax.core :as ajax]
             [day8.re-frame.http-fx]
-            [re-frame.core :refer [reg-event-db reg-event-fx path reg-sub dispatch dispatch-sync subscribe]]))
-
+            [re-frame.core :refer [reg-event-db reg-event-fx path reg-sub dispatch dispatch-sync subscribe]]
+            [cljs-time.core :as time]))
 
 (defonce registered-comps (atom nil))
 
 (defn register-comp [key comp]
   (swap! registered-comps assoc key comp))
-
 
 (reg-event-db
  :clear-message
@@ -87,18 +86,6 @@
     :db  (assoc db :loading? true)}))
 
 (reg-event-fx
- :load-plan
- (fn
-   [{db :db} _]
-   {:http-xhrio {:method :get
-                 :uri "/plan"
-                 :format (ajax/json-request-format)
-                 :response-format (ajax/json-response-format {:keywords? true})
-                 :on-success [:process-response :plan]
-                 :on-failure [:bad-response]}
-    :db  (assoc db :loading? true)}))
-
-(reg-event-fx
  :save-plan-day
  (fn
    [{db :db} [_ data]]
@@ -127,14 +114,6 @@
 ;; SUBS
 
 (reg-sub
- :all-exercises
- (fn [db [_]]
-   (or (:all-exercises db)
-       (do
-         (dispatch [:all-exercises])
-         (:all-exercises db)))))
-
-(reg-sub
  :plan
  (fn [db [_]]
    (or (:plan db)
@@ -152,6 +131,28 @@
  (fn [db [_ item-id]]
    (get-in db [:data :items item-id])))
 
+(reg-sub
+ :plan-by-daynum
+ (fn [db [_ daynum]]
+   (let [plan (filter #(= daynum (:day-num %)) (get-in db [:plan]))]
+     (reduce
+      (fn [out in]
+        (let [group-id (get-in in [:group :id])
+              ex-id (get-in in [:ex :id])
+              ex (cljc-util/ffilter
+                  #(= ex-id (:id %))
+                  (mapcat :exs (:all-exercises db)))]
+          (assoc out (:id in)
+                 {:group-title (:title
+                                (cljc-util/ffilter
+                                 #(= group-id (:id %))
+                                 (:all-exercises db)))
+                  :ex-title (:title ex)
+                  :progression-standard (:progression-standard ex)})))
+      {}
+      plan))))
+
+(def daynum (dec (time/day-of-week (time/now))))
 
 (defn comp-box []
   (fn [comp-key]
@@ -193,8 +194,36 @@
          @all-exercises))])))
 
 (defn dashboard []
-  (fn []
-    [rui/subheader "Dashboard"]))
+  (let [today-exs (re-frame/subscribe [:plan-by-daynum daynum])]
+    (fn []
+      (pprint @today-exs)
+      [rui/paper
+       [rui/subheader "Dashboard"]
+       (if-not @today-exs
+         [rui/linear-progress]
+         [:div
+          [rui/subheader "Today"]
+          (if (empty? @today-exs)
+            [rui/card
+             [rui/card-text
+              [rui/chip
+               {:style {:width "100%"}
+                :background-color "green"}
+               [:span
+                {:style {:color "white"
+                         :font-size "120%"
+                         :padding-left "10px"}}
+                "No exercises today - get some rest."]]]
+             [rui/card-text
+              {:color "gray"}
+              "But don't get too soft, or Pandora will shit you out dead with zero warning."]]
+            (doall
+             (map-indexed
+              (fn [idx [id ex]]
+                [rui/menu-item {:value id
+                                :primary-text (:ex-title ex)
+                                :secondary-text (:progression-standard ex)}])
+              @today-exs)))])])))
 
 (defn plan-table-select [title data selected type-keyw day-num on-change-fn]
   (fn [title data selected type-keyw day-num]
@@ -318,7 +347,6 @@
           day-plan))]])))
 
 (defn plan []
-  (dispatch [:load-plan])
   (let [all-exercises (re-frame/subscribe [:all-exercises])
         plan (re-frame/subscribe [:plan])
         open? (reagent/atom false)
@@ -342,7 +370,7 @@
          [add-ex-modal open? days all-exercises]]]
 
        [rui/table
-        [rui/table-header {:adjust-for-checkbox false :display-select-all false}
+        #_[rui/table-header {:adjust-for-checkbox false :display-select-all false}
          [rui/table-row
           [rui/table-header-column {:style {:padding "10px"
                                             :width "30px"
